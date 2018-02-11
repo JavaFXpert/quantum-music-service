@@ -1,12 +1,12 @@
 import numpy as np
 from math import *
 
-def compute_matrix(angles_vector_in_degrees):
+def compute_matrix(angles_vector_in_degrees_str):
     rotation_deg_of_freedom = 28
     matrix_dims = 8
     a = [0] * rotation_deg_of_freedom
     for i in range(rotation_deg_of_freedom):
-        a[i] = radians(angles_vector_in_degrees[i])
+        a[i] = radians(float(angles_vector_in_degrees_str[i]))
     matrix = np.identity(matrix_dims)
     rotated_matrix = \
     np.dot(np.transpose(np.matrix([[cos(a[0]), -sin(a[0]), 0, 0, 0, 0, 0, 0], [sin(a[0]), cos(a[0]), 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1]])),
