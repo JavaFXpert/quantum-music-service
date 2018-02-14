@@ -38,5 +38,5 @@ def compute_matrix(angles_vector_in_degrees_str):
     np.dot(np.transpose(np.matrix([[1, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, cos(a[26]), 0, -sin(a[26])], [0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, sin(a[26]), 0, cos(a[26])]])),
     np.dot(np.transpose(np.matrix([[1, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, cos(a[27]), -sin(a[27])], [0, 0, 0, 0, 0, 0, sin(a[27]), cos(a[27])]])),
     matrix))))))))))))))))))))))))))))
-    return rotated_matrix
+    return np.transpose(rotated_matrix)
 

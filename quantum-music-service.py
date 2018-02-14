@@ -61,7 +61,7 @@ def accompany():
         num_runs = 1
         result = qvm.run(prog, [2, 1, 0], num_runs)
         bits = result[0]
-        measured_pitch = bits[2] * 4 + bits[1] * 2 + bits[0]
+        measured_pitch = bits[0] * 4 + bits[1] * 2 + bits[2]
 
         print("result: ",  result)
 
