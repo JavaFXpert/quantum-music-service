@@ -692,22 +692,38 @@ MEASURE 1 [61]
 MEASURE 0 [60]
 """))
 
-        print(p)
+    print(p)
 
-        num_runs = 1
-        res = qvm.run(p, [2, 1, 0, 23, 22, 21, 44, 43, 42,
-                          5, 4, 3, 26, 25, 24, 47, 46, 45,
-                          8, 7, 6, 29, 28, 27, 50, 49, 48,
-                          11, 10, 9, 32, 31, 30, 53, 52, 51,
-                          14, 13, 12, 35, 34, 33, 56, 55, 54,
-                          17, 16, 15, 38, 37, 36, 59, 58, 57,
-                          20, 19, 18, 41, 40, 39, 62, 61, 60], num_runs)
-        print(res)
+    num_runs = 1
+    res = qvm.run(p, [2, 1, 0, 23, 22, 21, 44, 43, 42,
+                      5, 4, 3, 26, 25, 24, 47, 46, 45,
+                      8, 7, 6, 29, 28, 27, 50, 49, 48,
+                      11, 10, 9, 32, 31, 30, 53, 52, 51,
+                      14, 13, 12, 35, 34, 33, 56, 55, 54,
+                      17, 16, 15, 38, 37, 36, 59, 58, 57,
+                      20, 19, 18, 41, 40, 39, 62, 61, 60], num_runs)
+    print(res)
 
-
-        ret_dict = {"res": res}
+    all_note_nums = create_note_nums_array(res[0])
+    ret_dict = {"melody": all_note_nums[0:7],
+                "harmony_first_beat": all_note_nums[7:14],
+                "harmony_second_beat": all_note_nums[14:21]}
 
     return jsonify(ret_dict)
+
+def create_note_nums_array(ordered_classical_registers):
+    allnotes_array = []
+    cur_val = 0
+    for idx, bit in enumerate(ordered_classical_registers):
+        if idx % 3 == 0:
+            cur_val += bit * 4
+        elif idx % 3 == 1:
+            cur_val += bit * 2
+        else:
+            cur_val += bit
+            allnotes_array.append(cur_val)
+            cur_val = 0
+    return allnotes_array
 
 
 if __name__ == '__main__':
