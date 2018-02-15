@@ -695,19 +695,18 @@ MEASURE 0 [60]
     print(p)
 
     num_runs = 1
-    res = qvm.run(p, [2, 1, 0, 23, 22, 21, 44, 43, 42,
-                      5, 4, 3, 26, 25, 24, 47, 46, 45,
-                      8, 7, 6, 29, 28, 27, 50, 49, 48,
-                      11, 10, 9, 32, 31, 30, 53, 52, 51,
-                      14, 13, 12, 35, 34, 33, 56, 55, 54,
-                      17, 16, 15, 38, 37, 36, 59, 58, 57,
-                      20, 19, 18, 41, 40, 39, 62, 61, 60], num_runs)
+
+    res = qvm.run(p, [
+        2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 17, 16, 15, 20, 19, 18,
+        23, 22, 21, 44, 43, 42, 26, 25, 24, 47, 46, 45, 29, 28, 27, 50, 49, 48, 32, 31, 30,
+        53, 52, 51, 35, 34, 33, 56, 55, 54, 38, 37, 36, 59, 58, 57, 41, 40, 39, 62, 61, 60
+        ], num_runs)
+
     print(res)
 
     all_note_nums = create_note_nums_array(res[0])
     ret_dict = {"melody": all_note_nums[0:7],
-                "harmony_first_beat": all_note_nums[7:14],
-                "harmony_second_beat": all_note_nums[14:21]}
+                "harmony": all_note_nums[7:21]}
 
     return jsonify(ret_dict)
 
