@@ -752,14 +752,14 @@ def pitch_letter_by_index(pitch_idx):
 
 #
 def create_lilypond(melody_note_nums, harmony_note_nums):
-    retval = "\\version \"2.18.2\" melody = \\absolute { \\clef \"bass\" "
+    retval = "\\version \"2.18.2\" \\paper {#(set-paper-size \"a5\")} \\header {title=\"Schrodinger's Cat\" subtitle=\"on a Keyboard\" composer = \"Rigetti QVM\"}  melody = \\absolute { \\clef \"bass\" \\numericTimeSignature \\time 4/4 "
     for pitch in melody_note_nums:
         retval += " " + pitch_letter_by_index(pitch) + "2"
 
     # Add the same pitch to the end of the melody as in the beginning
     retval += " " + pitch_letter_by_index(melody_note_nums[0]) + "2"
 
-    retval += "} harmony = \\absolute { \\clef \"treble\""
+    retval += "} harmony = \\absolute { \\clef \"treble\" \\numericTimeSignature \\time 4/4 "
     for pitch in harmony_note_nums:
         retval += " " + pitch_letter_by_index(pitch) + "'4"
 
@@ -767,7 +767,7 @@ def create_lilypond(melody_note_nums, harmony_note_nums):
     # only an octave higher
     retval += " " + pitch_letter_by_index(melody_note_nums[0]) + "'2"
 
-    retval += "} \\score { << \\new Staff  { \\harmony } \\new Staff  { \\melody } >> }"
+    retval += "} \\score { << \\new Staff \\with {instrumentName = #\"Harmony\"}  { \\harmony } \\new Staff \\with {instrumentName = #\"Melody\"}  { \\melody } >> }"
     return retval
 
 if __name__ == '__main__':
