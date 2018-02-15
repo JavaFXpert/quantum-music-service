@@ -3,7 +3,6 @@ from pyquil.quil import Program
 from pyquil.quilbase import RawInstr
 import pyquil.api as api
 from pyquil.gates import *
-#import numpy as np
 from math import *
 from gatedefs import *
 
@@ -705,8 +704,12 @@ MEASURE 0 [60]
     print(res)
 
     all_note_nums = create_note_nums_array(res[0])
-    ret_dict = {"melody": all_note_nums[0:7],
-                "harmony": all_note_nums[7:21]}
+    melody_note_nums = all_note_nums[0:7]
+    harmony_note_nums = all_note_nums[7:21]
+
+    ret_dict = {"melody": melody_note_nums,
+                "harmony": harmony_note_nums,
+                "lilypond": create_lilypond(melody_note_nums, harmony_note_nums)}
 
     return jsonify(ret_dict)
 
@@ -724,6 +727,48 @@ def create_note_nums_array(ordered_classical_registers):
             cur_val = 0
     return allnotes_array
 
+
+def pitch_letter_by_index(pitch_idx):
+    retval = "z"
+    if pitch_idx == 0:
+        retval = "c"
+    elif pitch_idx == 1:
+        retval = "d"
+    elif pitch_idx == 2:
+        retval = "e"
+    elif pitch_idx == 3:
+        retval = "f"
+    elif pitch_idx == 4:
+        retval = "g"
+    elif pitch_idx == 5:
+        retval = "a"
+    elif pitch_idx == 6:
+        retval = "b"
+    elif pitch_idx == 7:
+        retval = "c'"
+    else:
+        retval = "z"
+    return retval
+
+#
+def create_lilypond(melody_note_nums, harmony_note_nums):
+    retval = "\\version \"2.18.2\" melody = \\absolute { \\clef \"bass\" "
+    for pitch in melody_note_nums:
+        retval += " " + pitch_letter_by_index(pitch) + "2"
+
+    # Add the same pitch to the end of the melody as in the beginning
+    retval += " " + pitch_letter_by_index(melody_note_nums[0]) + "2"
+
+    retval += "} harmony = \\absolute { \\clef \"treble\""
+    for pitch in harmony_note_nums:
+        retval += " " + pitch_letter_by_index(pitch) + "'4"
+
+    # Add the same pitch to the end of the harmony as in the beginning of the melody,
+    # only an octave higher
+    retval += " " + pitch_letter_by_index(melody_note_nums[0]) + "'2"
+
+    retval += "} \\score { << \\new Staff  { \\harmony } \\new Staff  { \\melody } >> }"
+    return retval
 
 if __name__ == '__main__':
     app.run()
