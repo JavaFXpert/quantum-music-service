@@ -693,23 +693,28 @@ MEASURE 0 [60]
 
     print(p)
 
-    num_runs = 1
+    use_simulator = False
 
-    res = qvm.run(p, [
-        2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 17, 16, 15, 20, 19, 18,
-        23, 22, 21, 44, 43, 42, 26, 25, 24, 47, 46, 45, 29, 28, 27, 50, 49, 48, 32, 31, 30,
-        53, 52, 51, 35, 34, 33, 56, 55, 54, 38, 37, 36, 59, 58, 57, 41, 40, 39, 62, 61, 60
-        ], num_runs)
+    if use_simulator:
+        num_runs = 1
+        res = qvm.run(p, [
+            2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 17, 16, 15, 20, 19, 18,
+            23, 22, 21, 44, 43, 42, 26, 25, 24, 47, 46, 45, 29, 28, 27, 50, 49, 48, 32, 31, 30,
+            53, 52, 51, 35, 34, 33, 56, 55, 54, 38, 37, 36, 59, 58, 57, 41, 40, 39, 62, 61, 60
+            ], num_runs)
+        print(res)
 
-    print(res)
-
-    all_note_nums = create_note_nums_array(res[0])
-    melody_note_nums = all_note_nums[0:7]
-    harmony_note_nums = all_note_nums[7:21]
+        all_note_nums = create_note_nums_array(res[0])
+        melody_note_nums = all_note_nums[0:7]
+        harmony_note_nums = all_note_nums[7:21]
+    else:
+        melody_note_nums =  [0,    1,    2,    3,    4,    5,    6]
+        harmony_note_nums = [2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 4, 3, 2]
 
     ret_dict = {"melody": melody_note_nums,
                 "harmony": harmony_note_nums,
-                "lilypond": create_lilypond(melody_note_nums, harmony_note_nums)}
+                "lilypond": create_lilypond(melody_note_nums, harmony_note_nums),
+                "toy_piano" : create_toy_piano(melody_note_nums, harmony_note_nums)}
 
     return jsonify(ret_dict)
 
@@ -750,7 +755,8 @@ def pitch_letter_by_index(pitch_idx):
         retval = "z"
     return retval
 
-#
+
+# Produce output for Lilypond
 def create_lilypond(melody_note_nums, harmony_note_nums):
     retval = "\\version \"2.18.2\" \\paper {#(set-paper-size \"a5\")} \\header {title=\"Schrodinger's Cat\" subtitle=\"on a Keyboard\" composer = \"Rigetti QVM\"}  melody = \\absolute { \\clef \"bass\" \\numericTimeSignature \\time 4/4 "
     for pitch in melody_note_nums:
@@ -769,6 +775,32 @@ def create_lilypond(melody_note_nums, harmony_note_nums):
 
     retval += "} \\score { << \\new Staff \\with {instrumentName = #\"Harmony\"}  { \\harmony } \\new Staff \\with {instrumentName = #\"Melody\"}  { \\melody } >> }"
     return retval
+
+# Produce output for toy piano
+def create_toy_piano(melody_note_nums, harmony_note_nums):
+    # For now, assume second-species counterpoint (two notes in harmony for each note in melody)
+    quarter_note_dur_ms = 200
+    notes = []
+    latest_melody_idx = 0
+    latest_harmony_idx = 0
+    num_pitches_in_octave = 8
+
+    for idx, pitch in enumerate(melody_note_nums):
+        notes.append({"num": pitch + 1, "time": idx * quarter_note_dur_ms * 2})
+        latest_melody_idx = idx
+
+    # Add the same pitch to the end of the melody as in the beginning
+    notes.append({"num": melody_note_nums[0] + 1, "time": (latest_melody_idx + 1) * quarter_note_dur_ms * 2})
+
+    for idx, pitch in enumerate(harmony_note_nums):
+        notes.append({"num": pitch + 1, "time": idx * quarter_note_dur_ms})
+        latest_melody_idx = idx
+
+    # Add the same pitch to the end of the harmony as in the beginning of the melody,
+    # only an octave higher
+    notes.append({"num": melody_note_nums[0] + num_pitches_in_octave + 1, "time": (latest_harmony_idx + 1) * quarter_note_dur_ms})
+
+    return notes
 
 if __name__ == '__main__':
     app.run()
