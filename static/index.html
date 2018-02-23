@@ -33,6 +33,8 @@
   <script src="unistochastic-matrix.js"></script>
   <script src="stochastic-harmony-matrix.js"></script>
   <script src="unistochastic-harmony-matrix.js"></script>
+  <script src="matrix-stochastic.js"></script>
+  <script src="matrix-unistochastic.js"></script>
 </head>
 
 <body>
@@ -72,6 +74,7 @@
         <v-content>
 
           <v-tabs>
+
             <v-tab>Melody Matrices</v-tab>
             <v-tab-item>
               <v-container fluid>
@@ -129,6 +132,54 @@
               </v-container>
             </v-tab-item>
 
+            <!--v-tab>Experimental Melody</v-tab>
+            <v-tab-item>
+              <v-container fluid>
+                <v-layout row wrap>
+                  <v-flex xs6>
+                    <matrix-unistochastic
+                        :numrowscols="gridNumRowsCols"
+                        :rownames="gridRowNames"
+                        :colnames="gridColNames"
+                        :wantedmatrix="desiredMelodyMatrix">
+                    </matrix-unistochastic>
+                  </v-flex>
+                  <v-flex xs6>
+                    <matrix-stochastic
+                        :numrowscols="gridNumRowsCols"
+                        :rownames="gridRowNames"
+                        :colnames="gridColNames"
+                        :mathmatrix="desiredMelodyMatrix.valueOf()">
+                    </matrix-stochastic>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-tab-item>
+
+            <v-tab>Experimental Harmony</v-tab>
+            <v-tab-item>
+              <v-container fluid>
+                <v-layout row wrap>
+                  <v-flex xs6>
+                    <matrix-unistochastic
+                        :numrowscols="gridNumRowsCols"
+                        :rownames="gridRowNames"
+                        :colnames="gridColNames"
+                        :wantedmatrix="desiredHarmonyMatrix">
+                    </matrix-unistochastic>
+                  </v-flex>
+                  <v-flex xs6>
+                    <matrix-stochastic
+                        :numrowscols="gridNumRowsCols"
+                        :rownames="gridRowNames"
+                        :colnames="gridColNames"
+                        :mathmatrix="desiredHarmonyMatrix.valueOf()">
+                    </matrix-stochastic>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-tab-item-->
+
           </v-tabs>
         </v-content>
       </main>
@@ -154,25 +205,25 @@
         gridColNames: ["C", "D", "E", "F", "G", "A", "B", "C'"],
         desiredMelodyMatrix: math.matrix(
 //            C4   D4   E4   F4   G4   A4   B4   C5
-          [ [.125, .125, .125, .125, .125, .125, .125, .125],   //C4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //D4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //E4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //F4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //G4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //A4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //B4
-            [.125, .125, .125, .125, .125, .125, .125, .125]]), //C5
+          [ [.00, .50, .50, .00, .00, .00, .00, .00],   //C4
+            [.25, .00, .50, .25, .00, .00, .00, .00],   //D4
+            [.00, .40, .00, .40, .20, .00, .00, .00],   //E4
+            [.00, .00, .40, .00, .40, .20, .00, .00],   //F4
+            [.00, .00, .00, .40, .00, .40, .20, .00],   //G4
+            [.00, .00, .00, .00, .40, .00, .40, .20],   //A4
+            [.00, .00, .00, .00, .30, .50, .00, .20],   //B4
+            [.00, .00, .00, .00, .00, .50, .50, .00]]), //C5
 
         desiredHarmonyMatrix: math.matrix(
 //            C4   D4   E4   F4   G4   A4   B4   C5
-          [ [.125, .125, .125, .125, .125, .125, .125, .125],   //C4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //D4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //E4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //F4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //G4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //A4
-            [.125, .125, .125, .125, .125, .125, .125, .125],   //B4
-            [.125, .125, .125, .125, .125, .125, .125, .125]]), //C5
+          [ [.00, .00, .50, .00, .00, .50, .00, .00],   //C4
+            [.00, .00, .00, .50, .00, .00, .50, .00],   //D4
+            [.50, .00, .00, .00, .50, .00, .00, .00],   //E4
+            [.00, .50, .00, .00, .00, .50, .00, .00],   //F4
+            [.00, .00, .50, .00, .00, .00, .50, .00],   //G4
+            [.00, .00, .00, .50, .00, .00, .00, .50],   //A4
+            [.00, .50, .00, .00, .50, .00, .00, .00],   //B4
+            [.00, .00, .50, .00, .00, .50, .00, .00]]), //C5
       }
     })
   </script>

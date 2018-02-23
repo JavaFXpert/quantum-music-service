@@ -779,7 +779,7 @@ def create_lilypond(melody_note_nums, harmony_note_nums):
 # Produce output for toy piano
 def create_toy_piano(melody_note_nums, harmony_note_nums):
     # For now, assume second-species counterpoint (two notes in harmony for each note in melody)
-    quarter_note_dur_ms = 200
+    quarter_note_dur_ms = 150
     notes = []
     latest_melody_idx = 0
     latest_harmony_idx = 0
