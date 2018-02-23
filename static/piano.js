@@ -13,7 +13,6 @@ var vm = Vue.component('piano-component', {
   template:
     '<div>' +
       '<div>' +
-        '<h1>My Piano</h1>' +
         '<div class="audioplayer" v-for="s in sounddata">' +
           '<audio :data-num="s.number">' +
             '<source :src="s.url" type="audio/ogg"/>' +
@@ -39,13 +38,9 @@ var vm = Vue.component('piano-component', {
             '<div class="time">{{note.time}}</div>' +
           '</li>' +
         '</ul>' +
-        '<button @click="load_sample">Sample</button>' +
         '<button @click="playnext(1)">Playnext</button>' +
         '<button v-if="playing_time&lt;=1" @click="startplay">Startplay<i class="fa fa-play"></i></button>' +
         '<button v-if="playing_time&gt;1" @click="stopplay">Stopplay<i class="fa fa-pause"></i></button>' +
-        '<button v-if="record_time&lt;=0" @click="start_record">Record<i class="fa fa-circle"></i></button>' +
-        '<button v-if="record_time&gt;=1" @click="stop_record">StopRecord<i class="fa fa-top"></i></button>' +
-        '<button @click="notes=[]">Clear</button>' +
         '<button @click="request_counterpoint">Counterpoint</button>' +
         '<h4>{{playing_time+record_time}}</h4>' +
       '</div>' +
@@ -110,7 +105,7 @@ var vm = Vue.component('piano-component', {
     },
     playnext: function(volume){
       var play_note=this.notes[this.now_note_id].num;
-      console.log(play_note);
+      //console.log(play_note);
       this.playnote(play_note,volume);
       this.now_note_id+=1;
 
@@ -185,16 +180,12 @@ var vm = Vue.component('piano-component', {
       }
       harmonyDegreesStr = harmonyDegrees.join(",");
       melodyDegreesStr = melodyDegrees.join(",");
-      //console.log("harmonyDegreesStr: " + harmonyDegreesStr);
-      //console.log("melodyDegreesStr: " + melodyDegreesStr);
 
       var vobj = this;
       axios.get(quantum_music_host +
           "/counterpoint?pitch_index=0&melodic_degrees=" + harmonyDegreesStr +
           "&harmonic_degrees=" + melodyDegreesStr)
           .then(function (response) {
-            console.log(response);
-            console.log(response.data.toy_piano);
             vobj.load_notes_from_response(response);
           })
           .catch(function (error) {
@@ -203,10 +194,10 @@ var vm = Vue.component('piano-component', {
     },
 
     load_notes_from_response: function(resp) {
-      //console.log(resp);
-      //console.log(resp.data.toy_piano);
+      console.log(resp)
+      alert(resp.data.lilypond)
       this.notes = resp.data.toy_piano;
-      this.startplay();
+      //this.startplay();
     }
 
   }

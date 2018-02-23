@@ -693,7 +693,7 @@ MEASURE 0 [60]
 
     print(p)
 
-    use_simulator = False
+    use_simulator = True
 
     if use_simulator:
         num_runs = 1
@@ -783,24 +783,28 @@ def create_toy_piano(melody_note_nums, harmony_note_nums):
     notes = []
     latest_melody_idx = 0
     latest_harmony_idx = 0
-    num_pitches_in_octave = 8
+    num_pitches_in_octave = 7
+    toy_piano_pitch_offset = 1
 
     for idx, pitch in enumerate(melody_note_nums):
-        notes.append({"num": pitch + 1, "time": idx * quarter_note_dur_ms * 2})
+        notes.append({"num": pitch + toy_piano_pitch_offset, "time": idx * quarter_note_dur_ms * 2})
         latest_melody_idx = idx
 
     # Add the same pitch to the end of the melody as in the beginning
-    notes.append({"num": melody_note_nums[0] + 1, "time": (latest_melody_idx + 1) * quarter_note_dur_ms * 2})
+    notes.append({"num": melody_note_nums[0] + toy_piano_pitch_offset, "time": (latest_melody_idx + 1) * quarter_note_dur_ms * 2})
 
     for idx, pitch in enumerate(harmony_note_nums):
-        notes.append({"num": pitch + 1, "time": idx * quarter_note_dur_ms})
-        latest_melody_idx = idx
+        notes.append({"num": pitch + num_pitches_in_octave + toy_piano_pitch_offset, "time": idx * quarter_note_dur_ms})
+        latest_harmony_idx = idx
 
     # Add the same pitch to the end of the harmony as in the beginning of the melody,
     # only an octave higher
-    notes.append({"num": melody_note_nums[0] + num_pitches_in_octave + 1, "time": (latest_harmony_idx + 1) * quarter_note_dur_ms})
+    notes.append({"num": melody_note_nums[0] + num_pitches_in_octave + toy_piano_pitch_offset, "time": (latest_harmony_idx + 1) * quarter_note_dur_ms})
 
-    return notes
+    # Sort the array of dictionaries by time
+    sorted_notes = sorted(notes, key=lambda k: k['time'])
+
+    return sorted_notes
 
 if __name__ == '__main__':
     app.run()
