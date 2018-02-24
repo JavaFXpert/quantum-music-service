@@ -38,7 +38,7 @@ def accompany():
             0 <= pitch_index < NUM_PITCHES):
 
         gate_matrix = compute_matrix(rotation_degrees)
-        pitch_probabilities_matrix = np.square(gate_matrix)[pitch_index]
+        pitch_probabilities_matrix = np.square(np.transpose(gate_matrix)[pitch_index])
 
         qvm = api.QVMConnection()
         p = Program().defgate("ACCOMPANIMENT_GATE", gate_matrix)
