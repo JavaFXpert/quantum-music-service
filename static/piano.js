@@ -40,8 +40,8 @@ var vm = Vue.component('piano-component', {
           '</li>' +
         '</ul>' +
         '<button @click="request_counterpoint">Counterpoint</button>' +
-        '<button v-if="playing_time&lt;=1" @click="startplay">Startplay<i class="fa fa-play"></i></button>' +
-        '<button v-if="playing_time&gt;1" @click="stopplay">Stopplay<i class="fa fa-pause"></i></button>' +
+        '<button v-if="playing_time&lt;=1" @click="startplay">Play<i class="fa fa-play"></i></button>' +
+        '<button v-if="playing_time&gt;1" @click="stopplay">Stop<i class="fa fa-pause"></i></button>' +
         '<h4>{{playing_time+record_time}}</h4>' +
       '</div>' +
     '</div>',
@@ -105,7 +105,6 @@ var vm = Vue.component('piano-component', {
     },
     playnext: function(volume){
       var play_note=this.notes[this.now_note_id].num;
-      //console.log(play_note);
       this.playnote(play_note,volume);
       this.now_note_id+=1;
 
@@ -113,19 +112,7 @@ var vm = Vue.component('piano-component', {
         this.stopplay();
       }
     },
-    start_record: function(){
-      this.record_time=0;
-      this.recorder=setInterval(function(){
-        vm.record_time++;
-      })
-    },
-    stop_record: function(){
-      clearInterval(this.recorder);
-      this.record_time=0;
-
-    },
     startplay: function(){
-      console.log("in startplay");
       this.now_note_id=0;
       this.playing_time=0;
       this.next_note_id=0;
@@ -160,15 +147,6 @@ var vm = Vue.component('piano-component', {
       if (this.record_time>0)
         this.notes.push({num: id,time: this.record_time});
       this.playnote(id,1);
-    },
-    load_sample: function(){
-      var vobj=this;
-      $.ajax({
-        url: "https://awiclass.monoame.com/api/command.php?type=get&name=music_dodoro",
-        success: function(res){
-          vobj.notes=JSON.parse(res);
-        }
-      });
     },
     request_counterpoint: function() {
       var quantum_music_host = "http://localhost:5000";
