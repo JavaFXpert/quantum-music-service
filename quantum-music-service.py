@@ -758,7 +758,7 @@ def pitch_letter_by_index(pitch_idx):
 
 # Produce output for Lilypond
 def create_lilypond(melody_note_nums, harmony_note_nums):
-    retval = "\\version \"2.18.2\" \\paper {#(set-paper-size \"a5\")} \\header {title=\"Schrodinger's Cat\" subtitle=\"on a Keyboard\" composer = \"Rigetti QVM\"}  melody = \\absolute { \\clef \"bass\" \\numericTimeSignature \\time 4/4 "
+    retval = "\\version \"2.18.2\" \\paper {#(set-paper-size \"a5\")} \\header {title=\"Schrodinger's Cat\" subtitle=\"on a Keyboard\" composer = \"Rigetti QVM\"}  melody = \\absolute { \\clef \"bass\" \\numericTimeSignature \\time 4/4 \\tempo 4 = 100"
     for pitch in melody_note_nums:
         retval += " " + pitch_letter_by_index(pitch) + "2"
 
@@ -779,7 +779,7 @@ def create_lilypond(melody_note_nums, harmony_note_nums):
 # Produce output for toy piano
 def create_toy_piano(melody_note_nums, harmony_note_nums):
     # For now, assume second-species counterpoint (two notes in harmony for each note in melody)
-    quarter_note_dur_ms = 100
+    quarter_note_dur = 150
     notes = []
     latest_melody_idx = 0
     latest_harmony_idx = 0
@@ -787,19 +787,19 @@ def create_toy_piano(melody_note_nums, harmony_note_nums):
     toy_piano_pitch_offset = 1
 
     for idx, pitch in enumerate(melody_note_nums):
-        notes.append({"num": pitch + toy_piano_pitch_offset, "time": idx * quarter_note_dur_ms * 2})
+        notes.append({"num": pitch + toy_piano_pitch_offset, "time": idx * quarter_note_dur * 2})
         latest_melody_idx = idx
 
     # Add the same pitch to the end of the melody as in the beginning
-    notes.append({"num": melody_note_nums[0] + toy_piano_pitch_offset, "time": (latest_melody_idx + 1) * quarter_note_dur_ms * 2})
+    notes.append({"num": melody_note_nums[0] + toy_piano_pitch_offset, "time": (latest_melody_idx + 1) * quarter_note_dur * 2})
 
     for idx, pitch in enumerate(harmony_note_nums):
-        notes.append({"num": pitch + num_pitches_in_octave + toy_piano_pitch_offset, "time": idx * quarter_note_dur_ms})
+        notes.append({"num": pitch + num_pitches_in_octave + toy_piano_pitch_offset, "time": idx * quarter_note_dur})
         latest_harmony_idx = idx
 
     # Add the same pitch to the end of the harmony as in the beginning of the melody,
     # only an octave higher
-    notes.append({"num": melody_note_nums[0] + num_pitches_in_octave + toy_piano_pitch_offset, "time": (latest_harmony_idx + 1) * quarter_note_dur_ms})
+    notes.append({"num": melody_note_nums[0] + num_pitches_in_octave + toy_piano_pitch_offset, "time": (latest_harmony_idx + 1) * quarter_note_dur})
 
     # Sort the array of dictionaries by time
     sorted_notes = sorted(notes, key=lambda k: k['time'])
