@@ -59,15 +59,14 @@ def counterpoint_degraded():
         harmonic_gate_matrix = compute_matrix(harmonic_degrees)
 
         qvm = api.QVMConnection()
-        p = Program()
 
-        p.defgate("MELODIC_GATE", melodic_gate_matrix)
-        p.defgate("HARMONIC_GATE", harmonic_gate_matrix)
+        #p.defgate("MELODIC_GATE", melodic_gate_matrix)
+        #p.defgate("HARMONIC_GATE", harmonic_gate_matrix)
 
         composition_bits = [0] * NUM_COMPOSITION_BITS
 
         # Convert the pitch index to a binary string, and place into the
-        # composition_bits array, least significant bits in lowest elements of array
+        # composition_bits array, most significant bits in lowest elements of array
         qubit_string = format(pitch_index, '03b')
         for idx, qubit_char in enumerate(qubit_string):
             if qubit_char == '0':
@@ -83,12 +82,14 @@ def counterpoint_degraded():
         num_runs = 1
 
         for melody_note_idx in range(0, NUM_MELODY_NOTES_TO_COMPUTE):
+            p = Program()
+            p.defgate("MELODIC_GATE", melodic_gate_matrix)
             for bit_idx in range(0, NUM_CIRCUIT_WIRES):
                 if (composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0):
-                    p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
+                    p.inst(I(bit_idx))
                     #p.inst(FALSE(bit_idx))
                 else:
-                    p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
+                    p.inst(X(bit_idx))
                     #p.inst(TRUE(bit_idx))
 
             p.inst(("MELODIC_GATE", 2, 1, 0)) \
@@ -99,7 +100,7 @@ def counterpoint_degraded():
             result = qvm.run(p, [2, 1, 0], num_runs)
             bits = result[0]
             for bit_idx in range(0, NUM_CIRCUIT_WIRES):
-                composition_bits[(melody_note_idx + 1) * NUM_CIRCUIT_WIRES + (NUM_CIRCUIT_WIRES - 1 - bit_idx)] = bits[bit_idx]
+                composition_bits[(melody_note_idx + 1) * NUM_CIRCUIT_WIRES + bit_idx] = bits[bit_idx]
 
             print(composition_bits)
 
