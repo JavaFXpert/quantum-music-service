@@ -86,10 +86,10 @@ def counterpoint_degraded():
             p.defgate("MELODIC_GATE", melodic_gate_matrix)
             for bit_idx in range(0, NUM_CIRCUIT_WIRES):
                 if (composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0):
-                    p.inst(I(bit_idx))
+                    p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
                     #p.inst(FALSE(bit_idx))
                 else:
-                    p.inst(X(bit_idx))
+                    p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
                     #p.inst(TRUE(bit_idx))
 
             p.inst(("MELODIC_GATE", 2, 1, 0)) \
