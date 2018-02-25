@@ -130,7 +130,7 @@ def counterpoint_degraded():
             result = qvm.run(p, [2, 1, 0], num_runs)
             bits = result[0]
             for bit_idx in range(0, NUM_CIRCUIT_WIRES):
-                composition_bits[((melody_note_idx + 1) * NUM_CIRCUIT_WIRES) +
+                composition_bits[(melody_note_idx * NUM_CIRCUIT_WIRES) +
                                  (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] = bits[bit_idx]
 
             print(composition_bits)
