@@ -43,16 +43,18 @@ TOTAL_MELODY_NOTES = 7
 @app.route('/counterpoint_degraded')
 def counterpoint_degraded():
     pitch_index = int(request.args['pitch_index'])
-    print("pitch_index: ", pitch_index)
+    if (pitch_index >= NUM_PITCHES):
+        pitch_index %= (NUM_PITCHES - 1)
+    #print("pitch_index: ", pitch_index)
 
     species = int(request.args['species'])
-    print("species: ", species)
+    #print("species: ", species)
 
     melodic_degrees = request.args['melodic_degrees'].split(",")
-    print("melodic_degrees: ", melodic_degrees)
+    #print("melodic_degrees: ", melodic_degrees)
 
     harmonic_degrees = request.args['harmonic_degrees'].split(",")
-    print("harmonic_degrees: ", harmonic_degrees)
+    #print("harmonic_degrees: ", harmonic_degrees)
 
     if (len(melodic_degrees) == DEGREES_OF_FREEDOM and
             len(harmonic_degrees) == DEGREES_OF_FREEDOM and
@@ -67,9 +69,6 @@ def counterpoint_degraded():
 
         qvm = api.QVMConnection()
 
-        #p.defgate("MELODIC_GATE", melodic_gate_matrix)
-        #p.defgate("HARMONIC_GATE", harmonic_gate_matrix)
-
         composition_bits = [0] * num_composition_bits
 
         # Convert the pitch index to a binary string, and place into the
@@ -78,14 +77,9 @@ def counterpoint_degraded():
         for idx, qubit_char in enumerate(qubit_string):
             if qubit_char == '0':
                 composition_bits[idx] = 0
-                #p.inst(I(NUM_CIRCUIT_WIRES - 1 - idx))
-                #p.inst(FALSE(idx))
             else:
                 composition_bits[idx] = 1
-                #p.inst(X(NUM_CIRCUIT_WIRES - 1 - idx))
-                #p.inst(TRUE(idx))
 
-        #print(p)
         num_runs = 1
 
         for melody_note_idx in range(0, TOTAL_MELODY_NOTES):
@@ -96,27 +90,25 @@ def counterpoint_degraded():
                 for bit_idx in range(0, NUM_CIRCUIT_WIRES):
                     if (composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0):
                         p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
-                        #p.inst(FALSE(bit_idx))
                     else:
                         p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
-                        #p.inst(TRUE(bit_idx))
 
                 p.inst(("MELODIC_GATE", 2, 1, 0)) \
                     .measure(0, 0).measure(1, 1) \
                     .measure(2, 2)
-                print(p)
+                #print(p)
 
                 result = qvm.run(p, [2, 1, 0], num_runs)
                 bits = result[0]
                 for bit_idx in range(0, NUM_CIRCUIT_WIRES):
                     composition_bits[(melody_note_idx + 1) * NUM_CIRCUIT_WIRES + bit_idx] = bits[bit_idx]
 
-                print(composition_bits)
+                #print(composition_bits)
 
                 measured_pitch = bits[0] * 4 + bits[1] * 2 + bits[2]
-                print("melody melody_note_idx measured_pitch")
-                print(melody_note_idx)
-                print(measured_pitch)
+                #print("melody melody_note_idx measured_pitch")
+                #print(melody_note_idx)
+                #print(measured_pitch)
 
             # Now compute a harmony note for the melody note
             p = Program()
@@ -124,15 +116,13 @@ def counterpoint_degraded():
             for bit_idx in range(0, NUM_CIRCUIT_WIRES):
                 if composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0:
                     p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
-                    #p.inst(FALSE(bit_idx))
                 else:
                     p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
-                    #p.inst(TRUE(bit_idx))
 
             p.inst(("HARMONIC_GATE", 2, 1, 0)) \
                 .measure(0, 0).measure(1, 1) \
                 .measure(2, 2)
-            print(p)
+            #print(p)
 
             result = qvm.run(p, [2, 1, 0], num_runs)
             bits = result[0]
@@ -140,12 +130,12 @@ def counterpoint_degraded():
                 composition_bits[(melody_note_idx * NUM_CIRCUIT_WIRES * harmony_notes_factor) +
                                  (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] = bits[bit_idx]
 
-            print(composition_bits)
+            #print(composition_bits)
 
             measured_pitch = bits[0] * 4 + bits[1] * 2 + bits[2]
-            print("harmony melody_note_idx measured_pitch")
-            print(melody_note_idx)
-            print(measured_pitch)
+            #print("harmony melody_note_idx measured_pitch")
+            #print(melody_note_idx)
+            #print(measured_pitch)
 
 
             # Now compute melody notes to follow the harmony note
@@ -157,15 +147,13 @@ def counterpoint_degraded():
                                          ((harmony_note_idx - 1) * NUM_CIRCUIT_WIRES) +
                                          (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] == 0):
                         p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
-                        #p.inst(FALSE(bit_idx))
                     else:
                         p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
-                        #p.inst(TRUE(bit_idx))
 
                 p.inst(("MELODIC_GATE", 2, 1, 0)) \
                     .measure(0, 0).measure(1, 1) \
                     .measure(2, 2)
-                print(p)
+                #print(p)
 
                 result = qvm.run(p, [2, 1, 0], num_runs)
                 bits = result[0]
@@ -174,19 +162,12 @@ def counterpoint_degraded():
                                       ((harmony_note_idx) * NUM_CIRCUIT_WIRES) +
                                      (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] = bits[bit_idx]
 
-                print(composition_bits)
+                #print(composition_bits)
 
                 measured_pitch = bits[0] * 4 + bits[1] * 2 + bits[2]
-                print("melody after harmony melody_note_idx measured_pitch")
-                print(melody_note_idx)
-                print(measured_pitch)
-
-        #res = qvm.run(p, [
-        #    2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 17, 16, 15, 20, 19, 18,
-        #    23, 22, 21, 44, 43, 42, 26, 25, 24, 47, 46, 45, 29, 28, 27, 50, 49, 48, 32, 31, 30,
-        #    53, 52, 51, 35, 34, 33, 56, 55, 54, 38, 37, 36, 59, 58, 57, 41, 40, 39, 62, 61, 60
-        #    ], num_runs)
-        #print(res)
+                #print("melody after harmony melody_note_idx measured_pitch")
+                #print(melody_note_idx)
+                #print(measured_pitch)
 
         all_note_nums = create_note_nums_array(composition_bits)
         melody_note_nums = all_note_nums[0:TOTAL_MELODY_NOTES]
@@ -290,13 +271,15 @@ def accompany():
 @app.route('/counterpoint')
 def counterpoint():
     pitch_index = int(request.args['pitch_index'])
-    print("pitch_index: ", pitch_index)
+    #print("pitch_index: ", pitch_index)
+    if (pitch_index >= NUM_PITCHES):
+        pitch_index %= (NUM_PITCHES - 1)
 
     melodic_degrees = request.args['melodic_degrees'].split(",")
-    print("melodic_degrees: ", melodic_degrees)
+    #print("melodic_degrees: ", melodic_degrees)
 
     harmonic_degrees = request.args['harmonic_degrees'].split(",")
-    print("harmonic_degrees: ", harmonic_degrees)
+    #print("harmonic_degrees: ", harmonic_degrees)
 
     if (len(melodic_degrees) == DEGREES_OF_FREEDOM and
             len(harmonic_degrees) == DEGREES_OF_FREEDOM and
@@ -879,7 +862,7 @@ MEASURE 1 [61]
 MEASURE 0 [60]
 """))
 
-    print(p)
+    #print(p)
 
     use_simulator = True
 
@@ -890,7 +873,7 @@ MEASURE 0 [60]
             23, 22, 21, 44, 43, 42, 26, 25, 24, 47, 46, 45, 29, 28, 27, 50, 49, 48, 32, 31, 30,
             53, 52, 51, 35, 34, 33, 56, 55, 54, 38, 37, 36, 59, 58, 57, 41, 40, 39, 62, 61, 60
             ], num_runs)
-        print(res)
+        #print(res)
 
         all_note_nums = create_note_nums_array(res[0])
         melody_note_nums = all_note_nums[0:7]

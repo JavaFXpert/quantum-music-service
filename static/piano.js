@@ -42,6 +42,7 @@ var vm = Vue.component('piano-component', {
         '<button @click="request_counterpoint(1)">Species 1</button>' +
         '<button @click="request_counterpoint(2)">Species 2</button>' +
         '<button @click="request_counterpoint(3)">Species 3</button>' +
+        '<button @click="request_counterpoint_one_shot">One Shot</button>' +
         '<button v-if="playing_time&lt;=1" @click="startplay">Play<i class="fa fa-play"></i></button>' +
         '<button v-if="playing_time&gt;1" @click="stopplay">Stop<i class="fa fa-pause"></i></button>' +
         '<h4>{{playing_time+record_time}}</h4>' +
@@ -154,6 +155,30 @@ var vm = Vue.component('piano-component', {
         this.initial_pitch_idx = id - 1;
       }
       this.playnote(id,1);
+    },
+    request_counterpoint_one_shot: function() {
+      var quantum_music_host = "http://localhost:5000";
+      harmonyDegrees = [];
+      melodyDegrees = [];
+      for (var idx = 0; idx < rotationDegOfFreedom; idx++) {
+        harmonyDegrees.push(rv.rotationangles[idx].value);
+        melodyDegrees.push(hrv.rotationangles[idx].value);
+      }
+      harmonyDegreesStr = harmonyDegrees.join(",");
+      melodyDegreesStr = melodyDegrees.join(",");
+
+      var vobj = this;
+      axios.get(quantum_music_host +
+          "/counterpoint?pitch_index=" + this.initial_pitch_idx +
+          "&melodic_degrees=" + harmonyDegreesStr +
+          "&harmonic_degrees=" + melodyDegreesStr)
+          .then(function (response) {
+            vobj.load_notes_from_response(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      this.initial_pitch_idx = 0;
     },
     request_counterpoint: function(species_arg) {
       var quantum_music_host = "http://localhost:5000";
