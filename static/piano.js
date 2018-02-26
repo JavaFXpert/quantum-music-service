@@ -65,6 +65,7 @@ var vm = Vue.component('piano-component', {
       now_press_key: -1,
       player: null,
       recorder: null,
+      initial_pitch_idx: 0, // Zero-based initial pitch index for generating counterpoint
       display_keys: [
         {num: 1, key: 90, type: 'white'},
         {num: 1.5, key: 83, type: 'black'},
@@ -144,8 +145,12 @@ var vm = Vue.component('piano-component', {
       return false;
     },
     addnote: function(id){
-      if (this.record_time>0)
-        this.notes.push({num: id,time: this.record_time});
+      if (this.record_time>0) {
+        this.notes.push({num: id, time: this.record_time});
+      }
+      else {
+        this.initial_pitch_idx = id - 1;
+      }
       this.playnote(id,1);
     },
     request_counterpoint: function() {
@@ -161,7 +166,7 @@ var vm = Vue.component('piano-component', {
 
       var vobj = this;
       axios.get(quantum_music_host +
-          "/counterpoint_degraded?pitch_index=0&melodic_degrees=" + harmonyDegreesStr +
+          "/counterpoint?pitch_index=" + this.initial_pitch_idx + "&melodic_degrees=" + harmonyDegreesStr +
           "&harmonic_degrees=" + melodyDegreesStr)
           .then(function (response) {
             vobj.load_notes_from_response(response);
@@ -169,6 +174,7 @@ var vm = Vue.component('piano-component', {
           .catch(function (error) {
             console.log(error);
           });
+      this.initial_pitch_idx = 0;
     },
 
     load_notes_from_response: function(resp) {
