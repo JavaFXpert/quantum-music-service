@@ -142,6 +142,36 @@ def counterpoint_degraded():
             print(melody_note_idx)
             print(measured_pitch)
 
+            # Now compute a melody note for the harmony note
+            p = Program()
+            p.defgate("MELODIC_GATE", melodic_gate_matrix)
+            for bit_idx in range(0, NUM_CIRCUIT_WIRES):
+                if (composition_bits[(melody_note_idx * NUM_CIRCUIT_WIRES) +
+                                 (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] == 0):
+                    p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
+                    #p.inst(FALSE(bit_idx))
+                else:
+                    p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
+                    #p.inst(TRUE(bit_idx))
+
+            p.inst(("MELODIC_GATE", 2, 1, 0)) \
+                .measure(0, 0).measure(1, 1) \
+                .measure(2, 2)
+            print(p)
+
+            result = qvm.run(p, [2, 1, 0], num_runs)
+            bits = result[0]
+            for bit_idx in range(0, NUM_CIRCUIT_WIRES):
+                composition_bits[(melody_note_idx * NUM_CIRCUIT_WIRES) +
+                                 (TOTAL_MELODY_NOTES * 2 * NUM_CIRCUIT_WIRES) + bit_idx] = bits[bit_idx]
+
+            print(composition_bits)
+
+            measured_pitch = bits[0] * 4 + bits[1] * 2 + bits[2]
+            print("melody after harmony melody_note_idx measured_pitch")
+            print(melody_note_idx)
+            print(measured_pitch)
+
 
 
 
