@@ -161,7 +161,7 @@ var vm = Vue.component('piano-component', {
 
       var vobj = this;
       axios.get(quantum_music_host +
-          "/counterpoint?pitch_index=0&melodic_degrees=" + harmonyDegreesStr +
+          "/counterpoint_degraded?pitch_index=0&melodic_degrees=" + harmonyDegreesStr +
           "&harmonic_degrees=" + melodyDegreesStr)
           .then(function (response) {
             vobj.load_notes_from_response(response);
