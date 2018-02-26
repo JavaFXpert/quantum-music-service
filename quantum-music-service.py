@@ -68,15 +68,15 @@ def counterpoint_degraded():
         composition_bits = [0] * NUM_COMPOSITION_BITS
 
         # Convert the pitch index to a binary string, and place into the
-        # composition_bits array, most significant bits in lowest elements of array
+        # composition_bits array, least significant bits in lowest elements of array
         qubit_string = format(pitch_index, '03b')
         for idx, qubit_char in enumerate(qubit_string):
             if qubit_char == '0':
-                composition_bits[NUM_CIRCUIT_WIRES - 1 - idx] = 0
+                composition_bits[idx] = 0
                 #p.inst(I(NUM_CIRCUIT_WIRES - 1 - idx))
                 #p.inst(FALSE(idx))
             else:
-                composition_bits[NUM_CIRCUIT_WIRES - 1 - idx] = 1
+                composition_bits[idx] = 1
                 #p.inst(X(NUM_CIRCUIT_WIRES - 1 - idx))
                 #p.inst(TRUE(idx))
 
@@ -310,10 +310,10 @@ def counterpoint():
         for idx, qubit_char in enumerate(qubit_string):
             if qubit_char == '0':
                 p.inst(I(NUM_CIRCUIT_WIRES - 1 - idx))
-                p.inst(FALSE(idx))
+                p.inst(FALSE(NUM_CIRCUIT_WIRES - 1 - idx))
             else:
                 p.inst(X(NUM_CIRCUIT_WIRES - 1 - idx))
-                p.inst(TRUE(idx))
+                p.inst(TRUE(NUM_CIRCUIT_WIRES - 1 - idx))
 
         p.inst(RawInstr("""
 DEFCIRCUIT ACTIVE-RESET q scratch_bit:
