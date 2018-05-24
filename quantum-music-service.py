@@ -14,7 +14,7 @@ DEGREES_OF_FREEDOM = 28
 NUM_PITCHES = 8
 NUM_CIRCUIT_WIRES = 3
 TOTAL_MELODY_NOTES = 7
-USE_ROTATIONS_CIRCUITS = False
+USE_ROTATIONS_CIRCUITS = True
 
 ###
 # Produces a musical (specifically second-species counterpoint) composition for
@@ -183,7 +183,9 @@ def counterpoint_degraded():
                     p.defgate("MELODIC_GATE", melodic_gate_matrix)
 
                 for bit_idx in range(0, NUM_CIRCUIT_WIRES):
-                    if (composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0):
+                    if (composition_bits[(melody_note_idx * NUM_CIRCUIT_WIRES * harmony_notes_factor) +
+                                         ((harmony_note_idx - 1) * NUM_CIRCUIT_WIRES) +
+                                         (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] == 0):
                         p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
                     else:
                         p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
