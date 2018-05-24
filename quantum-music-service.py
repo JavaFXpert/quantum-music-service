@@ -66,6 +66,7 @@ def counterpoint_degraded():
 
         #TODO: Move/change this
         rot_melodic_circuit = compute_circuit(melodic_degrees)
+        rot_harmonic_circuit = compute_circuit(harmonic_degrees)
 
         melodic_gate_matrix = compute_matrix(melodic_degrees)
         harmonic_gate_matrix = compute_matrix(harmonic_degrees)
@@ -91,11 +92,10 @@ def counterpoint_degraded():
         for melody_note_idx in range(0, TOTAL_MELODY_NOTES):
             #
             if (melody_note_idx < TOTAL_MELODY_NOTES - 1):
-                if (USE_ROTATIONS_CIRCUITS):
-                    p = Program()
+                p = Program()
+                if USE_ROTATIONS_CIRCUITS:
                     p = copy.deepcopy(rot_melodic_circuit)
                 else:
-                    p = Program()
                     p.defgate("MELODIC_GATE", melodic_gate_matrix)
 
                 for bit_idx in range(0, NUM_CIRCUIT_WIRES):
@@ -104,7 +104,7 @@ def counterpoint_degraded():
                     else:
                         p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
 
-                if (USE_ROTATIONS_CIRCUITS):
+                if USE_ROTATIONS_CIRCUITS:
                     p.inst().measure(0, 0).measure(1, 1) \
                         .measure(2, 2)
                     print("rot_melodic_circuit:")
@@ -129,18 +129,30 @@ def counterpoint_degraded():
                 #print(measured_pitch)
 
             # Now compute a harmony note for the melody note
+            print("Now compute a harmony note for the melody notev")
             p = Program()
-            p.defgate("HARMONIC_GATE", harmonic_gate_matrix)
+            if USE_ROTATIONS_CIRCUITS:
+                p = copy.deepcopy(rot_harmonic_circuit)
+            else:
+                p.defgate("HARMONIC_GATE", harmonic_gate_matrix)
+
             for bit_idx in range(0, NUM_CIRCUIT_WIRES):
                 if composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0:
                     p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
                 else:
                     p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
 
-            p.inst(("HARMONIC_GATE", 2, 1, 0)) \
-                .measure(0, 0).measure(1, 1) \
-                .measure(2, 2)
-            #print(p)
+            if USE_ROTATIONS_CIRCUITS:
+                p.inst().measure(0, 0).measure(1, 1) \
+                    .measure(2, 2)
+                print("rot_harmonic_circuit:")
+                print(p)
+            else:
+                p.inst(("HARMONIC_GATE", 2, 1, 0)) \
+                    .measure(0, 0).measure(1, 1) \
+                    .measure(2, 2)
+                print("matrix_harmonic_circuit:")
+                print(p)
 
             result = qvm.run(p, [2, 1, 0], num_runs)
             bits = result[0]
@@ -157,21 +169,31 @@ def counterpoint_degraded():
 
 
             # Now compute melody notes to follow the harmony note
+            print("Now compute melody notes to follow the harmony note")
             for harmony_note_idx in range(1, harmony_notes_factor):
                 p = Program()
-                p.defgate("MELODIC_GATE", melodic_gate_matrix)
+                if USE_ROTATIONS_CIRCUITS:
+                    p = copy.deepcopy(rot_melodic_circuit)
+                else:
+                    p.defgate("MELODIC_GATE", melodic_gate_matrix)
+
                 for bit_idx in range(0, NUM_CIRCUIT_WIRES):
-                    if (composition_bits[(melody_note_idx * NUM_CIRCUIT_WIRES * harmony_notes_factor) +
-                                         ((harmony_note_idx - 1) * NUM_CIRCUIT_WIRES) +
-                                         (TOTAL_MELODY_NOTES * NUM_CIRCUIT_WIRES) + bit_idx] == 0):
+                    if (composition_bits[melody_note_idx * NUM_CIRCUIT_WIRES + bit_idx] == 0):
                         p.inst(I(NUM_CIRCUIT_WIRES - 1 - bit_idx))
                     else:
                         p.inst(X(NUM_CIRCUIT_WIRES - 1 - bit_idx))
 
-                p.inst(("MELODIC_GATE", 2, 1, 0)) \
-                    .measure(0, 0).measure(1, 1) \
-                    .measure(2, 2)
-                #print(p)
+                if USE_ROTATIONS_CIRCUITS:
+                    p.inst().measure(0, 0).measure(1, 1) \
+                        .measure(2, 2)
+                    print("rot_melodic_circuit:")
+                    print(p)
+                else:
+                    p.inst(("MELODIC_GATE", 2, 1, 0)) \
+                        .measure(0, 0).measure(1, 1) \
+                        .measure(2, 2)
+                    print("matrix_melodic_circuit:")
+                    print(p)
 
                 result = qvm.run(p, [2, 1, 0], num_runs)
                 bits = result[0]
