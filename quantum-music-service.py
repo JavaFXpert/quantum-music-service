@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from pyquil.quil import Program
 from pyquil.quilbase import RawInstr
 import pyquil.api as api
@@ -9,6 +10,7 @@ from gatedefs import *
 from rotcircuit import *
 
 app = Flask(__name__)
+CORS(app)
 
 DEGREES_OF_FREEDOM = 28
 NUM_PITCHES = 8
@@ -66,6 +68,8 @@ def counterpoint_degraded():
 
         #TODO: Move/change this
         rot_melodic_circuit = compute_circuit(melodic_degrees)
+        print("rot_melodic_circuit:")
+        print(rot_melodic_circuit)
         rot_harmonic_circuit = compute_circuit(harmonic_degrees)
 
         melodic_gate_matrix = compute_matrix(melodic_degrees)
@@ -1027,4 +1031,5 @@ def create_toy_piano(melody_note_nums, harmony_note_nums):
     return sorted_notes
 
 if __name__ == '__main__':
-    app.run()
+    # app.run()
+    app.run(host='127.0.0.1', port=5008)

@@ -67,28 +67,16 @@ def compute_circuit(angles_vector_in_degrees_str):
     #p.inst(X(1))
     #p.inst(X(2))
 
-    wavefunction = qvm.wavefunction(p)
-    print(wavefunction)
-
     # CD rotation
     p.inst(AARY(a[0] * 2)(2, 1, 0))
 
-    wavefunction = qvm.wavefunction(p)
-    print(wavefunction)
-
     # CE rotation
     p.inst(AARY(a[1] * 2)(2, 0, 1))
-
-    wavefunction = qvm.wavefunction(p)
-    print(wavefunction)
 
     # CF rotation
     p.inst(CNOT(1, 0))
     p.inst(AARY(a[2] * 2)(0, 2, 1))
     p.inst(CNOT(1, 0))
-
-    wavefunction = qvm.wavefunction(p)
-    print(wavefunction)
 
     # CG rotation
     p.inst(AARY(a[3] * 2)(0, 1, 2))

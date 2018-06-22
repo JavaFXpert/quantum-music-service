@@ -122,6 +122,7 @@ Vue.component('unistochastic-matrix', {
             '<td v-for="(scol, scolIdx) in 4">' +
               '<label>{{rv.rotationangles [(srowIdx) * 4 + (scolIdx)].label}}</label>' +
               '<input type="range" v-model="rv.rotationangles [(srowIdx) * 4 + (scolIdx)].value" min="0" max="359" :step="Math.pow(10, -rv.degreedecimals)" class="rot-slider">' +
+              //'<input type="range" v-model="rv.rotationangles [(srowIdx) * 4 + (scolIdx)].value" min="0" max="359" :step="22.5" class="rot-slider">' +
             '</td>' +
           '</tr>' +
         '</tbody>' +
@@ -313,7 +314,9 @@ Vue.component('unistochastic-matrix', {
       for (var epochIdx = 0; epochIdx < rv.numepochs; epochIdx++) {
         //console.log("epochIdx: " + epochIdx);
         for (var dofIdx = 0; dofIdx < rotationDegOfFreedom; dofIdx++) {
-          //console.log("dofIdx: " + dofIdx);
+          // if (dofIdx != 0 && dofIdx != 1 && dofIdx != 3 && dofIdx != 8 && dofIdx != 10 && dofIdx != 13 &&
+          //     dofIdx != 16 && dofIdx != 21 && dofIdx != 22 && dofIdx != 23 && dofIdx != 26 && dofIdx != 27 ) continue;
+          console.log("dofIdx: " + dofIdx);
           var curAngRad = arrayOfAnglesRad[dofIdx];
           var proposedCurAngRad = curAngRad;
           //console.log("  curAngRad: " + curAngRad);
